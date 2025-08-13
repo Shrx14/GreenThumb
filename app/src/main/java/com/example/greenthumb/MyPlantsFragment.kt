@@ -5,31 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MyPlantsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MyPlantsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    // No parameters are needed, so we can remove the old boilerplate code.
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,32 +26,39 @@ class MyPlantsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find the button from the layout
+        // 1. Find all the views from your new layout
+        val recyclerView: RecyclerView = view.findViewById(R.id.plantsRecyclerView)
+        val emptyView: LinearLayout = view.findViewById(R.id.emptyView)
         val fab: FloatingActionButton = view.findViewById(R.id.fabAddPlant)
 
-        // Set the click listener to navigate
+        // 2. Initialize your PlantAdapter
+        val plantAdapter = PlantAdapter()
+
+        // 3. Set up the RecyclerView with a two-column grid
+        recyclerView.adapter = plantAdapter
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 2) // 2 columns
+
+        // 4. Set the click listener for the FloatingActionButton to navigate
         fab.setOnClickListener {
             findNavController().navigate(R.id.action_myPlantsFragment_to_addPlantFragment)
         }
-    }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyPlantsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyPlantsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        // --- FOR TESTING ---
+        // Create a dummy list to test the UI.
+        // Later, this data will come from your Room Database.
+        val dummyPlantList = listOf<Plant>() // An empty list to test the empty state
+        // val dummyPlantList = listOf(Plant(1, "Test Plant", ...)) // Use this to test the grid
+
+        // 5. Add logic to handle the empty state
+        if (dummyPlantList.isEmpty()) {
+            recyclerView.visibility = View.GONE  // Hide the list
+            emptyView.visibility = View.VISIBLE // Show the empty message
+        } else {
+            recyclerView.visibility = View.VISIBLE // Show the list
+            emptyView.visibility = View.GONE   // Hide the empty message
+        }
+
+        // Submit the list to the adapter to be displayed
+        plantAdapter.submitList(dummyPlantList)
     }
 }
