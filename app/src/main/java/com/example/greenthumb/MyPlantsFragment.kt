@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,6 +37,18 @@ class MyPlantsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_my_plants, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Find the button from the layout
+        val fab: FloatingActionButton = view.findViewById(R.id.fabAddPlant)
+
+        // Set the click listener to navigate
+        fab.setOnClickListener {
+            findNavController().navigate(R.id.action_myPlantsFragment_to_addPlantFragment)
+        }
     }
 
     companion object {
